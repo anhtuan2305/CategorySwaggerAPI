@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Quản lý Category</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .main-container {
+            max-width: 1450px;
+            margin: 50px auto;
+        }
+
+        .category-icon,
+        .preview-icon {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .no-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            color: #6c757d;
+            font-size: 25px;
+        }
+
+        .table td,
+        .table th {
+            vertical-align: middle;
+        }
+
+        #messageAlert {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid main-container px-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Quản lý Category</h1>
+            <p class="text-secondary fs-5 mb-0">
+                RESTful API kết hợp AJAX
+            </p>
+        </div>
+
+        <button class="btn btn-primary btn-lg"
+                data-bs-toggle="modal"
+                data-bs-target="#addCategoryModal">
+
+            <i class="fa-solid fa-plus"></i>
+            Thêm Category
+        </button>
+    </div>
+
+    <div id="messageAlert"
+         class="alert alert-dismissible fade show"
+         role="alert">
+
+        <span id="messageText"></span>
+
+        <button type="button"
+                class="btn-close"
+                onclick="hideAlert()">
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Icon</th>
+                        <th>Tên Category</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="categoryTableBody">
+                    <tr>
+                        <td colspan="4"
+                            class="text-center text-secondary py-4">
+                            Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal thêm Category -->
+<div class="modal fade"
+     id="addCategoryModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm Category</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <form id="addCategoryForm"
+                  enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="addCategoryName"
+                               class="form-label">
+                            Tên Category
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="addCategoryName"
+                               name="categoryName"
+                               placeholder="Nhập tên Category"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addCategoryIcon"
+                               class="form-label">
+                            Icon
+                        </label>
+
+                        <input type="file"
+                               class="form-control"
+                               id="addCategoryIcon"
+                               name="icon"
+                               accept="image/*">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit"
+                            id="addButton"
+                            class="btn btn-primary">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Lưu
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa Category -->
+<div class="modal fade"
+     id="editCategoryModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Sửa Category</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <form id="editCategoryForm"
+                  enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           id="editCategoryId"
+                           name="categoryId">
+
+                    <div class="mb-3">
+                        <label for="editCategoryName"
+                               class="form-label">
+                            Tên Category
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="editCategoryName"
+                               name="categoryName"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Icon hiện tại
+                        </label>
+
+                        <div id="currentIcon"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryIcon"
+                               class="form-label">
+                            Chọn icon mới
+                        </label>
+
+                        <input type="file"
+                               class="form-control"
+                               id="editCategoryIcon"
+                               name="icon"
+                               accept="image/*">
+
+                        <small class="text-secondary">
+                            Không chọn ảnh nếu muốn giữ icon hiện tại.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit"
+                            id="updateButton"
+                            class="btn btn-warning">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Cập nhật
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js">
+</script>
+
+<script>
+    let categoryList = [];
+
+    $(document).ready(function () {
+        loadCategories();
+    });
+
+    function getCategoryArray(response) {
+        if (Array.isArray(response)) {
+            return response;
+        }
+
+        if (response && Array.isArray(response.body)) {
+            return response.body;
+        }
+
+        if (response && Array.isArray(response.data)) {
+            return response.data;
+        }
+
+        if (response && Array.isArray(response.content)) {
+            return response.content;
+        }
+
+        if (response &&
+            response.data &&
+            Array.isArray(response.data.content)) {
+            return response.data.content;
+        }
+
+        return [];
+    }
+
+    function loadCategories() {
+        $("#categoryTableBody").html(`
+            <tr>
+                <td colspan="4"
+                    class="text-center text-secondary py-4">
+                    Đang tải dữ liệu...
+                </td>
+            </tr>
+        `);
+
+        $.ajax({
+            url: "/api/category?_=" + new Date().getTime(),
+            type: "GET",
+            dataType: "json",
+            cache: false,
+
+            success: function (response) {
+                categoryList = getCategoryArray(response);
+                renderCategoryTable(categoryList);
+            },
+
+            error: function (xhr) {
+                console.error(xhr.responseText);
+
+                $("#categoryTableBody").html(`
+                    <tr>
+                        <td colspan="4"
+                            class="text-center text-danger py-4">
+                            Không thể tải danh sách Category.
+                        </td>
+                    </tr>
+                `);
+            }
+        });
+    }
+
+    function renderCategoryTable(categories) {
+        const tableBody = $("#categoryTableBody");
+        tableBody.empty();
+
+        if (!categories || categories.length === 0) {
+            tableBody.html(`
+                <tr>
+                    <td colspan="4"
+                        class="text-center text-secondary py-4">
+                        Chưa có Category nào.
+                    </td>
+                </tr>
+            `);
+
+            return;
+        }
+
+        categories.forEach(function (category) {
+            const id = category.categoryId;
+            const name = escapeHtml(category.categoryName || "");
+            const iconHtml = getIconHtml(category.icon);
+
+            tableBody.append(`
+                <tr>
+                    <td>${id}</td>
+
+                    <td>${iconHtml}</td>
+
+                    <td>${name}</td>
+
+                    <td class="text-center">
+
+                        <button type="button"
+                                class="btn btn-warning btn-sm me-2"
+                                onclick="openEditModal(${id})">
+
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Sửa
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteCategory(${id})">
+
+                            <i class="fa-solid fa-trash"></i>
+                            Xóa
+                        </button>
+
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    function getIconHtml(icon) {
+        if (!icon) {
+            return createDefaultIcon();
+        }
+
+        const iconUrl =
+            "/api/category/files/"
+            + encodeURIComponent(icon)
+            + "?_="
+            + new Date().getTime();
+
+        return `
+            <img src="${iconUrl}"
+                 class="category-icon"
+                 alt="Category icon"
+                 onerror="showDefaultIcon(this)">
+        `;
+    }
+
+    /*
+     * THÊM CATEGORY
+     */
+    $("#addCategoryForm").on("submit", function (event) {
+        event.preventDefault();
+
+        const formElement = this;
+        const formData = new FormData(formElement);
+        const button = $("#addButton");
+
+        button.prop("disabled", true);
+        button.text("Đang lưu...");
+
+        $.ajax({
+            url: "/api/category/addCategory",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function (response) {
+                if (response && response.status === false) {
+                    showAlert(response.message, "danger");
+                    return;
+                }
+
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        document.getElementById("addCategoryModal")
+                    )
+                    .hide();
+
+                formElement.reset();
+
+                showAlert(
+                    response.message || "Thêm Category thành công.",
+                    "success"
+                );
+
+                loadCategories();
+            },
+
+            error: function (xhr) {
+                console.error(xhr.responseText);
+
+                showAlert(
+                    getErrorMessage(xhr, "Thêm Category thất bại."),
+                    "danger"
+                );
+            },
+
+            complete: function () {
+                button.prop("disabled", false);
+
+                button.html(`
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Lưu
+                `);
+            }
+        });
+    });
+
+    /*
+     * MỞ MODAL SỬA
+     */
+    function openEditModal(categoryId) {
+        const category = categoryList.find(function (item) {
+            return Number(item.categoryId) === Number(categoryId);
+        });
+
+        if (!category) {
+            showAlert("Không tìm thấy Category.", "danger");
+            return;
+        }
+
+        $("#editCategoryId").val(category.categoryId);
+        $("#editCategoryName").val(category.categoryName);
+        $("#editCategoryIcon").val("");
+
+        $("#currentIcon").html(getIconHtml(category.icon));
+
+        bootstrap.Modal
+            .getOrCreateInstance(
+                document.getElementById("editCategoryModal")
+            )
+            .show();
+    }
+
+    /*
+     * CẬP NHẬT CATEGORY
+     */
+    $("#editCategoryForm").on("submit", function (event) {
+        event.preventDefault();
+
+        const formElement = this;
+        const formData = new FormData(formElement);
+        const button = $("#updateButton");
+
+        button.prop("disabled", true);
+        button.text("Đang cập nhật...");
+
+        $.ajax({
+            url: "/api/category/updateCategory",
+            type: "PUT",
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function (response) {
+                if (response && response.status === false) {
+                    showAlert(
+                        response.message || "Không thể cập nhật Category.",
+                        "danger"
+                    );
+
+                    return;
+                }
+
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        document.getElementById("editCategoryModal")
+                    )
+                    .hide();
+
+                showAlert(
+                    response.message || "Cập nhật Category thành công.",
+                    "success"
+                );
+
+                loadCategories();
+            },
+
+            error: function (xhr) {
+                console.error(xhr.responseText);
+
+                showAlert(
+                    getErrorMessage(xhr, "Cập nhật Category thất bại."),
+                    "danger"
+                );
+            },
+
+            complete: function () {
+                button.prop("disabled", false);
+
+                button.html(`
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Cập nhật
+                `);
+            }
+        });
+    });
+
+    /*
+     * XÓA CATEGORY
+     */
+    function deleteCategory(categoryId) {
+        const confirmed = confirm(
+            "Bạn có chắc muốn xóa Category có ID "
+            + categoryId
+            + " không?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        $.ajax({
+            url: "/api/category/deleteCategory?categoryId="
+                + encodeURIComponent(categoryId),
+
+            type: "DELETE",
+
+            success: function (response) {
+                if (response && response.status === false) {
+                    showAlert(
+                        response.message || "Không thể xóa Category.",
+                        "danger"
+                    );
+
+                    return;
+                }
+
+                showAlert(
+                    response.message || "Xóa Category thành công.",
+                    "success"
+                );
+
+                loadCategories();
+            },
+
+            error: function (xhr) {
+                console.error(xhr.responseText);
+
+                showAlert(
+                    getErrorMessage(xhr, "Xóa Category thất bại."),
+                    "danger"
+                );
+            }
+        });
+    }
+
+    function showAlert(message, type) {
+        const alertBox = $("#messageAlert");
+
+        alertBox.removeClass(
+            "alert-success alert-danger alert-warning alert-info"
+        );
+
+        alertBox.addClass("alert-" + type);
+
+        $("#messageText").text(message || "Đã thực hiện.");
+
+        alertBox.stop(true, true).fadeIn();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        setTimeout(function () {
+            alertBox.fadeOut();
+        }, 4000);
+    }
+
+    function hideAlert() {
+        $("#messageAlert").hide();
+    }
+
+    function getErrorMessage(xhr, defaultMessage) {
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            return xhr.responseJSON.message;
+        }
+
+        return defaultMessage;
+    }
+
+    function createDefaultIcon() {
+        return `
+            <div class="no-icon">
+                <i class="fa-regular fa-image"></i>
+            </div>
+        `;
+    }
+
+    function showDefaultIcon(imageElement) {
+        imageElement.parentElement.innerHTML = createDefaultIcon();
+    }
+
+    function escapeHtml(value) {
+        return $("<div>").text(value).html();
+    }
+</script>
+
+</body>
+</html>

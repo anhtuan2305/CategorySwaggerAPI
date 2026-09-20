@@ -18,11 +18,10 @@
     <groupId>vn.tuan</groupId>
     <artifactId>category-swagger-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-
     <name>CategorySwaggerAPI</name>
 
     <description>
-        CRUD Category API with file upload and Swagger 3
+        CRUD Category API with file upload, Swagger 3 and AJAX
     </description>
 
     <properties>
@@ -31,51 +30,66 @@
 
     <dependencies>
 
+        <!-- Spring MVC và REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Giao diện HTML Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- SQL Server -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Swagger 3 -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.0.2</version>
         </dependency>
 
+        <!-- Xử lý file -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
         </dependency>
 
+        <!-- Configuration Properties -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
 
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
+        <!-- DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -83,6 +97,7 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -92,7 +107,6 @@
     </dependencies>
 
     <build>
-
         <plugins>
 
             <plugin>
@@ -100,22 +114,16 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
 
                 <configuration>
-
                     <excludes>
-
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
-
                     </excludes>
-
                 </configuration>
-
             </plugin>
 
         </plugins>
-
     </build>
 
 </project>
